@@ -34,16 +34,16 @@ export async function PUT(request, { params }) {
   try {
     const data = await request.json();
 
-    // Validación de datos (comprobar que los campos requeridos están presentes)
-    if (
-      data.participacion === null ||
-      data.participacion === undefined ||
-      !data.inf_med ||
-      !data.inf_alim ||
-      !data.dieta
-    ) {
-      throw new Error("Faltan campos requeridos para la actualización.");
-    }
+    // // Validación de datos (comprobar que los campos requeridos están presentes)
+    // if (
+    //   data.participacion === null ||
+    //   data.participacion === undefined ||
+    //   !data.inf_med ||
+    //   !data.inf_alim ||
+    //   !data.dieta
+    // ) {
+    //   throw new Error("Faltan campos requeridos para la actualización.");
+    // }
 
     // Consulta preparada para evitar la inyección SQL
     const query = `
