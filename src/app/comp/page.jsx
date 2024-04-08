@@ -1,8 +1,14 @@
 import axios from "axios";
 import MyModal from "./modal";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 async function loadProducts() {
-  const { data } = await axios.get("http://localhost:3000/api/comp/1");
+  if (!process.env.API_BASE_URL) {
+    return null;
+  }
+  const { data } = await axios.get(`${process.env.API_BASE_URL}/api/comp/1`);
   return data;
 }
 
@@ -47,6 +53,13 @@ const Indicador = ({ participacion }) => {
 
 async function Compañia() {
   const parts = await loadProducts();
+  if (parts == null) {
+    return (
+      <>
+        <h1>No data</h1>
+      </>
+    );
+  }
   const companyNumber = parts.length > 0 ? parts[0].compañia : "";
   const hombres = parts.filter((part) => part.sexo === "H");
   const mujeres = parts.filter((part) => part.sexo === "M");
