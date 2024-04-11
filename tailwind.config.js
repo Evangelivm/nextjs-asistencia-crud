@@ -17,6 +17,7 @@ module.exports = {
         redFirst: "#701C45",
         redSecond: "#AF1556",
         blueFirst: "#002F56",
+        blueSecond: "#001323",
       },
     },
   },

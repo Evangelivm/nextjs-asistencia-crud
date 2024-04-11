@@ -1,12 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true,
-  distDir: "dist",
+  // reactStrictMode: true,
+  // distDir: "dist",
   async redirects() {
     return [
       {
         source: "/",
-        destination: "/comp",
+        destination: "/menu",
         permanent: true,
       },
     ];
