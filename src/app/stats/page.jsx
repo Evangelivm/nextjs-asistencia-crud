@@ -1,6 +1,43 @@
 import React from "react";
+import Dough from "./dough";
+import { conn } from "../libs/mysql";
+import Link from "next/link";
 
-function page() {
+async function loadStats() {
+  const data = await conn.query(
+    "SELECT a.compañia, SUM( CASE WHEN b.participacion = 3 THEN 1 ELSE 0 END ) AS confirmados, SUM( CASE WHEN b.participacion = 2 THEN 1 ELSE 0 END ) AS contactados, SUM( CASE WHEN b.participacion = 1 THEN 1 ELSE 0 END ) AS cancelados, COUNT(*) AS total FROM participante a JOIN asistencia b ON a.id_part = b.id_part GROUP BY a.compañia;"
+  );
+  const jsonData = data.map((row) => ({
+    compañia: row["compañia"],
+    confirmados: row["confirmados"],
+    contactados: row["contactados"],
+    cancelados: row["cancelados"],
+    total: row["total"],
+  }));
+
+  return jsonData;
+}
+// async function sum(){
+//   const stats = await loadStats();
+// }
+
+async function sumStats(data) {
+  return data.reduce(
+    (acc, curr) => {
+      acc.confirmados += curr.confirmados;
+      acc.contactados += curr.contactados;
+      acc.cancelados += curr.cancelados;
+      acc.total += curr.total;
+      return acc;
+    },
+    { confirmados: 0, contactados: 0, cancelados: 0, total: 0 }
+  );
+}
+
+async function page() {
+  const stats = await loadStats();
+  const sums = await sumStats(stats);
+  console.log(sums);
   return (
     <div className="bg-blueFirst min-h-screen ">
       <div className="container px-5 py-24 mx-auto">
@@ -12,7 +49,7 @@ function page() {
             <div className="flex flex-wrap -m-4 text-center">
               <div className="p-4 sm:w-1/4 w-1/2">
                 <h2 className="title-font font-medium sm:text-4xl text-3xl text-yellowFirst">
-                  2.7K
+                  {sums.total}
                 </h2>
                 <p className="leading-relaxed text-white">
                   Participantes en Compañias
@@ -20,22 +57,41 @@ function page() {
               </div>
               <div className="p-4 sm:w-1/4 w-1/2">
                 <h2 className="title-font font-medium sm:text-4xl text-3xl text-yellowFirst">
-                  1.8K
+                  {sums.confirmados}
                 </h2>
                 <p className="leading-relaxed text-white">Confirmados</p>
               </div>
               <div className="p-4 sm:w-1/4 w-1/2">
                 <h2 className="title-font font-medium sm:text-4xl text-3xl text-yellowFirst">
-                  35
+                  {sums.contactados}
                 </h2>
                 <p className="leading-relaxed text-white">Contactados</p>
               </div>
               <div className="p-4 sm:w-1/4 w-1/2">
                 <h2 className="title-font font-medium sm:text-4xl text-3xl text-yellowFirst">
-                  4
+                  {sums.cancelados}
                 </h2>
                 <p className="leading-relaxed text-white">Cancelados</p>
               </div>
+            </div>
+          </div>
+        </section>
+        <section className="text-gray-600 body-font">
+          <div className="container px-5 py-8 mx-auto">
+            <div className="flex flex-wrap -m-4 text-center">
+              {stats.map((stat) => (
+                <div className="w-1/8 p-2 md:w-1/4 sm:w-1/2 w-full">
+                  <div className="border-2 border-gray-200 px-4 py-6 rounded-lg">
+                    <Link href={`/comp/${stat.compañia}`}>
+                      <h2 className="title-font font-medium text-xl text-white mb-2">
+                        Compañia {stat.compañia}
+                      </h2>
+                    </Link>
+                    <Dough key={stat.compañia} info={stat} />
+                  </div>
+                </div>
+              ))}
+              {/* indicadores pon compañia */}
             </div>
           </div>
         </section>
