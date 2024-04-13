@@ -5,7 +5,7 @@ import Link from "next/link";
 
 async function loadStats() {
   const data = await conn.query(
-    "SELECT a.compañia, SUM( CASE WHEN b.participacion = 3 THEN 1 ELSE 0 END ) AS confirmados, SUM( CASE WHEN b.participacion = 2 THEN 1 ELSE 0 END ) AS contactados, SUM( CASE WHEN b.participacion = 1 THEN 1 ELSE 0 END ) AS cancelados, COUNT(*) AS total FROM participante a JOIN asistencia b ON a.id_part = b.id_part GROUP BY a.compañia;"
+    "SELECT a.compañia, SUM( CASE WHEN b.participacion = 3 THEN 1 ELSE 0 END ) AS confirmados, SUM( CASE WHEN b.participacion = 2 THEN 1 ELSE 0 END ) AS contactados, SUM( CASE WHEN b.participacion = 1 THEN 1 ELSE 0 END ) AS cancelados, COUNT(*) AS total FROM participante a JOIN asistencia b ON a.id_part = b.id_part WHERE a.tipo = 'participante' GROUP BY a.compañia;"
   );
   const jsonData = data.map((row) => ({
     compañia: row["compañia"],
@@ -17,11 +17,8 @@ async function loadStats() {
 
   return jsonData;
 }
-// async function sum(){
-//   const stats = await loadStats();
-// }
 
-async function sumStats(data) {
+function sumStats(data) {
   return data.reduce(
     (acc, curr) => {
       acc.confirmados += curr.confirmados;
@@ -36,8 +33,7 @@ async function sumStats(data) {
 
 async function page() {
   const stats = await loadStats();
-  const sums = await sumStats(stats);
-  console.log(sums);
+  const sums = sumStats(stats);
   return (
     <div className="bg-blueFirst min-h-screen ">
       <div className="container px-5 py-24 mx-auto">
@@ -82,7 +78,10 @@ async function page() {
               {stats.map((stat) => (
                 <div className="w-1/8 p-2 md:w-1/4 sm:w-1/2 w-full">
                   <div className="border-2 border-gray-200 px-4 py-6 rounded-lg">
-                    <Link href={`/comp/${stat.compañia}`}>
+                    <Link
+                      href="/comp/[stat.compañia]"
+                      as={`/comp/${stat.compañia}`}
+                    >
                       <h2 className="title-font font-medium text-xl text-white mb-2">
                         Compañia {stat.compañia}
                       </h2>
