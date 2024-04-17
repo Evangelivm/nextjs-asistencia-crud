@@ -5,7 +5,7 @@ import Navbar from "./navbar";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
-  title: "PFJ",
+  title: "PFJ-JAS",
   description: "Gestor de Compañias",
 };
 

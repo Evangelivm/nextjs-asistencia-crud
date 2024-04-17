@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { conn } from "@/app/libs/mysql";
+import { z } from "zod";
 
 // Recoje la informacion de toda la compañia
 export async function GET(request, { params }) {
@@ -13,6 +14,7 @@ export async function GET(request, { params }) {
         {
           message: "No existe",
         },
+
         {
           status: 404,
         }
@@ -29,21 +31,23 @@ export async function GET(request, { params }) {
   }
 }
 
-//Actualizar las confirmaciones o participaciones
+const participSchema = z.object({
+  dieta: z.boolean(),
+  id_part: z.string().min(1).max(3),
+  infAlim: z.string().min(2),
+  infMed: z.string().min(2),
+  part: z.string().max(1),
+});
+
 export async function PUT(request, { params }) {
   try {
     const data = await request.json();
 
-    // // Validación de datos (comprobar que los campos requeridos están presentes)
-    // if (
-    //   data.participacion === null ||
-    //   data.participacion === undefined ||
-    //   !data.inf_med ||
-    //   !data.inf_alim ||
-    //   !data.dieta
-    // ) {
-    //   throw new Error("Faltan campos requeridos para la actualización.");
-    // }
+    const resultado = participSchema.safeParse(data);
+
+    if (!resultado.success) {
+      return NextResponse.json(result.error, { status: 400 });
+    }
 
     // Consulta preparada para evitar la inyección SQL
     const query = `
@@ -53,11 +57,13 @@ export async function PUT(request, { params }) {
       WHERE a.id_part = ?
     `;
 
+    const diet = resultado.data.dieta ? "Si" : "No";
+
     const result = await conn.query(query, [
-      data.participacion,
-      data.inf_med,
-      data.inf_alim,
-      data.dieta,
+      resultado.data.part,
+      resultado.data.infMed,
+      resultado.data.infAlim,
+      diet,
       params.id,
     ]);
 

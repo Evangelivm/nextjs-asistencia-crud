@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@headlessui/react": "^1.7.18",
+    "@hookform/resolvers": "^3.3.4",
     "axios": "^1.6.8",
     "chart.js": "^4.4.2",
     "dotenv": "^16.4.5",
@@ -17,7 +18,9 @@
     "react": "^18",
     "react-chartjs-2": "^5.2.0",
     "react-dom": "^18",
-    "serverless-mysql": "^1.5.5"
+    "react-hook-form": "^7.51.3",
+    "serverless-mysql": "^1.5.5",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "autoprefixer": "^10.0.1",

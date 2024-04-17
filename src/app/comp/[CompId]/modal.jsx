@@ -2,6 +2,14 @@
 
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment, useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { partSchema } from "@/valid/partSchema";
+import { useRouter } from "next/navigation";
+import axios from "axios";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const ContactoTabla = ({ titulo, nombre, telefono }) => {
   return (
@@ -49,83 +57,84 @@ const ContactoTabla = ({ titulo, nombre, telefono }) => {
   );
 };
 
-function BotonAsis({ part }) {
-  const [estadoPart, setEstadoPart] = useState(part);
-  const [pressedButton, setPressedButton] = useState(null);
+// function BotonAsis({ part, register, handleSubmit }) {
+//   const [estadoPart, setEstadoPart] = useState(part);
+//   const [pressedButton, setPressedButton] = useState(null);
 
-  // Esta función se ejecuta solo una vez al renderizar el componente
-  // Puedes usar useEffect si necesitas ejecutar código en cada cambio de "part"
-  useState(() => {
-    if (part === 1) {
-      setEstadoPart("1");
-      setPressedButton("cancelado");
-    } else if (part === 2) {
-      setEstadoPart("2");
-      setPressedButton("contactado");
-    } else if (part === 3) {
-      setEstadoPart("3");
-      setPressedButton("confirmado");
-    }
-  }, [part]);
+//   // Esta función se ejecuta solo una vez al renderizar el componente
+//   // Puedes usar useEffect si necesitas ejecutar código en cada cambio de "part"
+//   useState(() => {
+//     if (part === 1) {
+//       setEstadoPart("1");
+//       setPressedButton("cancelado");
+//     } else if (part === 2) {
+//       setEstadoPart("2");
+//       setPressedButton("contactado");
+//     } else if (part === 3) {
+//       setEstadoPart("3");
+//       setPressedButton("confirmado");
+//     }
+//   }, [part]);
 
-  const handleContactado = () => {
-    setEstadoPart("2");
-    setPressedButton("contactado");
-  };
+//   const handleContactado = () => {
+//     setEstadoPart("2");
+//     setPressedButton("contactado");
+//   };
 
-  const handleConfirmado = () => {
-    setEstadoPart("3");
-    setPressedButton("confirmado");
-  };
+//   const handleConfirmado = () => {
+//     setEstadoPart("3");
+//     setPressedButton("confirmado");
+//   };
 
-  const handleCancelado = () => {
-    setEstadoPart("1");
-    setPressedButton("cancelado");
-  };
+//   const handleCancelado = () => {
+//     setEstadoPart("1");
+//     setPressedButton("cancelado");
+//   };
 
-  return (
-    <>
-      <div className="flex justify-evenly py-3">
-        <button
-          type="button"
-          className={`border ${
-            pressedButton === "contactado"
-              ? "bg-yellow-600 text-white"
-              : "border-yellow-600 hover:bg-yellow-600 hover:text-white bg-white text-yellow-600"
-          } font-bold py-2 px-4 rounded text-sm`}
-          onClick={handleContactado}
-        >
-          Contactado
-        </button>
-        <button
-          type="button"
-          className={`border ${
-            pressedButton === "confirmado"
-              ? "bg-green-600 text-white"
-              : "border-green-600 hover:bg-green-600 hover:text-white bg-white text-green-600"
-          } font-bold py-2 px-4 rounded text-sm`}
-          onClick={handleConfirmado}
-        >
-          Confirmado
-        </button>
-        <button
-          type="button"
-          className={`border ${
-            pressedButton === "cancelado"
-              ? "bg-red-500 text-white"
-              : "border-red-500 hover:bg-red-500 hover:text-white bg-white text-red-500"
-          } font-bold py-2 px-4 rounded text-sm`}
-          onClick={handleCancelado}
-        >
-          Cancelado
-        </button>
-      </div>
-      <input type="hidden" value={estadoPart} />
-    </>
-  );
-}
+//   return (
+//     <>
+//       <div className="flex justify-evenly py-3">
+//         <button
+//           type="button"
+//           className={`border ${
+//             pressedButton === "contactado"
+//               ? "bg-yellow-600 text-white"
+//               : "border-yellow-600 hover:bg-yellow-600 hover:text-white bg-white text-yellow-600"
+//           } font-bold py-2 px-4 rounded text-sm`}
+//           onClick={handleContactado}
+//         >
+//           Contactado
+//         </button>
+//         <button
+//           type="button"
+//           className={`border ${
+//             pressedButton === "confirmado"
+//               ? "bg-green-600 text-white"
+//               : "border-green-600 hover:bg-green-600 hover:text-white bg-white text-green-600"
+//           } font-bold py-2 px-4 rounded text-sm`}
+//           onClick={handleConfirmado}
+//         >
+//           Confirmado
+//         </button>
+//         <button
+//           type="button"
+//           className={`border ${
+//             pressedButton === "cancelado"
+//               ? "bg-red-500 text-white"
+//               : "border-red-500 hover:bg-red-500 hover:text-white bg-white text-red-500"
+//           } font-bold py-2 px-4 rounded text-sm`}
+//           onClick={handleCancelado}
+//         >
+//           Cancelado
+//         </button>
+//       </div>
+//       <input type="hidden" value={estadoPart} {...register("part")} />
+//     </>
+//   );
+// }
 
 export default function MyModal({
+  id_part,
   nombres,
   apellidos,
   edad,
@@ -160,6 +169,48 @@ export default function MyModal({
   const tieneContacto2 = telC2SinEspacio && telC2SinEspacio.trim().length > 0;
   const capNom1 = capitalizarNombre(nom_c1);
   const capNom2 = capitalizarNombre(nom_c2);
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(partSchema),
+  });
+  const [estadoPart, setEstadoPart] = useState(participacion);
+  const [pressedButton, setPressedButton] = useState(null);
+  const router = useRouter();
+
+  useState(() => {
+    if (participacion === 1) {
+      setEstadoPart("1");
+      setPressedButton("cancelado");
+    } else if (participacion === 2) {
+      setEstadoPart("2");
+      setPressedButton("contactado");
+    } else if (participacion === 3) {
+      setEstadoPart("3");
+      setPressedButton("confirmado");
+    }
+  }, [participacion]);
+
+  const handleContactado = () => {
+    setEstadoPart("2");
+    setPressedButton("contactado");
+    setValue("part", "2"); // Actualiza el valor de "part" a "2"
+  };
+
+  const handleConfirmado = () => {
+    setEstadoPart("3");
+    setPressedButton("confirmado");
+    setValue("part", "3"); // Actualiza el valor de "part" a "3"
+  };
+
+  const handleCancelado = () => {
+    setEstadoPart("1");
+    setPressedButton("cancelado");
+    setValue("part", "1"); // Actualiza el valor de "part" a "1"
+  };
 
   function closeModal() {
     setIsOpen(false);
@@ -296,8 +347,64 @@ export default function MyModal({
                       />
                     )}
                   </div>
-                  <form action="">
-                    <BotonAsis part={participacion} />
+                  {/* Formulario */}
+                  <form
+                    onSubmit={handleSubmit(async (data) => {
+                      // console.log(data);
+                      const res = await axios.put(
+                        "http://localhost:3000/api/comp/" + id_part,
+                        data
+                      );
+                      router.refresh();
+                    })}
+                  >
+                    {/* <BotonAsis
+                      part={participacion}
+                      handleSubmit={handleSubmit}
+                      register={register}
+                    /> */}
+
+                    <div className="flex justify-evenly py-3">
+                      <button
+                        type="button"
+                        className={`border ${
+                          pressedButton === "contactado"
+                            ? "bg-yellow-600 text-white"
+                            : "border-yellow-600 hover:bg-yellow-600 hover:text-white bg-white text-yellow-600"
+                        } font-bold py-2 px-4 rounded text-sm`}
+                        onClick={handleContactado}
+                      >
+                        Contactado
+                      </button>
+                      <button
+                        type="button"
+                        className={`border ${
+                          pressedButton === "confirmado"
+                            ? "bg-green-600 text-white"
+                            : "border-green-600 hover:bg-green-600 hover:text-white bg-white text-green-600"
+                        } font-bold py-2 px-4 rounded text-sm`}
+                        onClick={handleConfirmado}
+                      >
+                        Confirmado
+                      </button>
+                      <button
+                        type="button"
+                        className={`border ${
+                          pressedButton === "cancelado"
+                            ? "bg-red-500 text-white"
+                            : "border-red-500 hover:bg-red-500 hover:text-white bg-white text-red-500"
+                        } font-bold py-2 px-4 rounded text-sm`}
+                        onClick={handleCancelado}
+                      >
+                        Cancelado
+                      </button>
+                    </div>
+                    <input
+                      type="hidden"
+                      value={estadoPart}
+                      {...register("part")}
+                    />
+                    {/* Fin del formulario */}
                     <div>
                       <hr className="my-4" />
                       <label className="block text-sm font-medium leading-6 text-gray-900 mb-2">
@@ -307,7 +414,13 @@ export default function MyModal({
                         type="text"
                         className="block w-full rounded-md border-0 py-1.5 pl-2 pr-2 mb-5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-black sm:text-sm "
                         defaultValue={inf_med}
+                        {...register("infMed")}
                       />
+                      {errors.infMed?.message && (
+                        <p className="block text-sm font-medium leading-6 text-red-500 mb-2">
+                          {errors.infMed?.message}
+                        </p>
+                      )}
                       <label className="block text-sm font-medium leading-6 text-gray-900 mb-2">
                         Información Alimenticia
                       </label>
@@ -315,7 +428,13 @@ export default function MyModal({
                         type="text"
                         className="block w-full rounded-md border-0 py-1.5 pl-2 pr-2 mb-5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-black sm:text-sm "
                         defaultValue={inf_alim}
+                        {...register("infAlim")}
                       />
+                      {errors.infAlim?.message && (
+                        <p className="block text-sm font-medium leading-6 text-red-500 mb-2">
+                          {errors.infAlim?.message}
+                        </p>
+                      )}
                       <div className="relative flex gap-x-3">
                         <div className="flex h-6 items-center">
                           <input
@@ -325,6 +444,7 @@ export default function MyModal({
                             className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
                             defaultChecked={isChecked}
                             onChange={(e) => setIsChecked(e.target.checked)}
+                            {...register("dieta")}
                           />
                         </div>
                         <div className="text-sm leading-6">
@@ -337,16 +457,25 @@ export default function MyModal({
                         </div>
                       </div>
                     </div>
+                    <input
+                      type="hidden"
+                      value={id_part}
+                      {...register("id_part")}
+                    />
+                    <div className="mt-4">
+                      <button
+                        type="submit"
+                        className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                        onClick={() => {
+                          if (!errors.length) {
+                            closeModal;
+                          }
+                        }}
+                      >
+                        Guardar
+                      </button>
+                    </div>
                   </form>
-                  <div className="mt-4">
-                    <button
-                      type="submit"
-                      className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                      onClick={closeModal}
-                    >
-                      Guardar
-                    </button>
-                  </div>
                 </Dialog.Panel>
               </Transition.Child>
             </div>

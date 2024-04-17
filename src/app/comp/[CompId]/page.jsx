@@ -172,6 +172,7 @@ async function Compañia({ params }) {
                           }`}
                         >
                           <MyModal
+                            id_part={part.id_part}
                             nombres={part.nombres}
                             apellidos={part.apellidos}
                             estaca={part.estaca}
@@ -277,6 +278,7 @@ async function Compañia({ params }) {
                           }`}
                         >
                           <MyModal
+                            id_part={part.id_part}
                             nombres={part.nombres}
                             apellidos={part.apellidos}
                             estaca={part.estaca}
