@@ -8,6 +8,7 @@ import { partSchema } from "@/valid/partSchema";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import dotenv from "dotenv";
+import { Toaster, toast } from "sonner";
 
 dotenv.config();
 
@@ -296,6 +297,7 @@ export default function MyModal({
                   >
                     {nombreCompleto} ({edad})
                   </Dialog.Title>
+                  <Toaster richColors position="top-center" />
                   <div className="mt-2 flex flex-nowrap text-center">
                     <div className="mx-4">
                       <h3 className="text-black">Estaca</h3>
@@ -470,6 +472,7 @@ export default function MyModal({
                           if (!errors.length) {
                             closeModal;
                           }
+                          toast.success("Se guardaron los cambios");
                         }}
                       >
                         Guardar

@@ -15,8 +15,8 @@ function Navbar() {
           <Link href={"/stats"} className="mr-5 hover:text-yellowFirst">
             Estadisticas
           </Link>
-          <Link href={"/"} className="mr-5 hover:text-yellowFirst">
-            Confirmaciones
+          <Link href={"/registro"} className="mr-5 hover:text-yellowFirst">
+            Registro
           </Link>
           <Link href={"/"} className="mr-5 hover:text-yellowFirst">
             Permutas
