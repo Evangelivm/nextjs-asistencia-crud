@@ -4,12 +4,14 @@ import Result from "./result";
 import axios from "axios";
 import { Toaster, toast } from "sonner";
 import { Suspense } from "react";
+import PartLoading from "./partloading";
 
 function Barra({ part }) {
   const [inputValue, setInputValue] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [partValue, setpartValue] = useState("");
   const [responseData, setResponseData] = useState([]);
+  const [showResult, setShowResult] = useState(false);
 
   useEffect(() => {
     if (inputValue) {
@@ -42,6 +44,7 @@ function Barra({ part }) {
       const result = res.data[0];
       // console.log(result);
       setResponseData(result);
+      setShowResult(true);
     } catch (error) {
       console.error("Error al obtener los datos:", error);
       throw error;
@@ -101,9 +104,13 @@ function Barra({ part }) {
           </button>
         </div>
       </div>
-      <div className="w-full  mb-16 items-center text-center">
-        <Result result={responseData} />
-      </div>
+      {showResult && (
+        <Suspense fallback={<PartLoading />}>
+          <div className="w-full mb-16 items-center text-center">
+            <Result result={responseData} />
+          </div>
+        </Suspense>
+      )}
     </>
   );
 }
