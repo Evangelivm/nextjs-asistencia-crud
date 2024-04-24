@@ -353,10 +353,7 @@ export default function MyModal({
                   <form
                     onSubmit={handleSubmit(async (data) => {
                       // console.log(data);
-                      const res = await axios.put(
-                        "http://localhost:3000/api/comp/" + id_part,
-                        data
-                      );
+                      const res = await axios.put("/api/comp/" + id_part, data);
                       router.refresh();
                     })}
                   >

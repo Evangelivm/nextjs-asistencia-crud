@@ -38,9 +38,7 @@ function Barra({ part }) {
   const handleClick = async () => {
     try {
       // Simulando datos del componente hijo
-      const res = await axios.get(
-        `http://localhost:3000/api/part/${partValue}`
-      );
+      const res = await axios.get(`api/part/${partValue}`);
       const result = res.data[0];
       // console.log(result);
       setResponseData(result);
@@ -77,6 +75,7 @@ function Barra({ part }) {
                 onChange={(e) => setInputValue(e.target.value)}
                 placeholder="Escriba para buscar...."
                 autoCorrect="off"
+                autoComplete="off"
               />
               {suggestions.length > 1 && (
                 <ul className="bg-white rounded-md  absolute w-full">

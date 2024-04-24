@@ -7,9 +7,7 @@ function Result({ result }) {
     event.preventDefault(); // Prevenir el comportamiento por defecto del formulario
 
     try {
-      const res = await axios.put(
-        `http://localhost:3000/api/part/${result.id_part}`
-      );
+      const res = await axios.put(`api/part/${result.id_part}`);
 
       // Aquí puedes manejar la respuesta si es necesario
       console.log(res.data);
