@@ -1,21 +1,25 @@
-import React from "react";
 import Dough from "./dough";
 import { conn } from "../libs/mysql";
 import Link from "next/link";
 
 async function loadStats() {
-  const data = await conn.query(
-    "SELECT a.compañia, SUM( CASE WHEN b.participacion = 3 THEN 1 ELSE 0 END ) AS confirmados, SUM( CASE WHEN b.participacion = 2 THEN 1 ELSE 0 END ) AS contactados, SUM( CASE WHEN b.participacion = 1 THEN 1 ELSE 0 END ) AS cancelados, COUNT(*) AS total FROM participante a JOIN asistencia b ON a.id_part = b.id_part WHERE a.tipo = 'participante' GROUP BY a.compañia;"
-  );
-  const jsonData = data.map((row) => ({
-    compañia: row["compañia"],
-    confirmados: row["confirmados"],
-    contactados: row["contactados"],
-    cancelados: row["cancelados"],
-    total: row["total"],
-  }));
+  try {
+    const data = await conn.query(
+      "SELECT a.compañia, SUM( CASE WHEN b.participacion = 3 THEN 1 ELSE 0 END ) AS confirmados, SUM( CASE WHEN b.participacion = 2 THEN 1 ELSE 0 END ) AS contactados, SUM( CASE WHEN b.participacion = 1 THEN 1 ELSE 0 END ) AS cancelados, COUNT(*) AS total FROM participante a JOIN asistencia b ON a.id_part = b.id_part WHERE a.tipo = 'participante' GROUP BY a.compañia;"
+    );
+    const jsonData = data.map((row) => ({
+      compañia: row["compañia"],
+      confirmados: row["confirmados"],
+      contactados: row["contactados"],
+      cancelados: row["cancelados"],
+      total: row["total"],
+    }));
 
-  return jsonData;
+    return jsonData;
+  } catch (error) {
+    console.error("Error loading stats:", error);
+    throw error;
+  }
 }
 
 function sumStats(data) {
@@ -76,7 +80,10 @@ async function page() {
           <div className="container px-5 py-8 mx-auto">
             <div className="flex flex-wrap -m-4 text-center">
               {stats.map((stat) => (
-                <div className="w-1/8 p-2 md:w-1/4 sm:w-1/2 w-full">
+                <div
+                  className="w-1/8 p-2 md:w-1/4 sm:w-1/2 w-full"
+                  key={stat.compañia}
+                >
                   <div className="border-2 border-gray-200 px-4 py-6 rounded-lg">
                     <Link
                       href="/comp/[stat.compañia]"

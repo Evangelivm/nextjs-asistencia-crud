@@ -1,17 +1,22 @@
-import Loading from "./loading";
+"use server";
 import { conn } from "../libs/mysql";
 import Barra from "./barra";
 
 async function loadStats() {
-  const data = await conn.query(
-    "SELECT id_part, CONCAT(apellidos,', ',nombres) AS 'name' FROM participante;"
-  );
-  const keyValueArray = data.map((row) => [row["id_part"], row["name"]]);
+  try {
+    const data = await conn.query(
+      "SELECT id_part, CONCAT(apellidos,', ',nombres) AS 'name' FROM participante;"
+    );
+    const keyValueArray = data.map((row) => [row["id_part"], row["name"]]);
 
-  return keyValueArray;
+    return keyValueArray;
+  } catch (error) {
+    console.error("Error loading stats:", error);
+    throw error;
+  }
 }
 
-async function Page({ children }) {
+async function Page() {
   const part = await loadStats();
   //   console.log(part);
 

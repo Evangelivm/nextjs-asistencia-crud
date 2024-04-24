@@ -2,9 +2,16 @@ import { conn } from "../libs/mysql";
 import Linker from "./linker";
 
 async function loadPages() {
-  const data = await conn.query("SELECT DISTINCT `compañia` FROM participante");
-  const jsonData = data.map((row) => ({ compañia: row["compañia"] }));
-  return jsonData;
+  try {
+    const data = await conn.query(
+      "SELECT DISTINCT `compañia` FROM participante"
+    );
+    const jsonData = data.map((row) => ({ compañia: row["compañia"] }));
+    return jsonData;
+  } catch (error) {
+    console.error("Error loading pages:", error);
+    throw error;
+  }
 }
 
 async function NewPage() {

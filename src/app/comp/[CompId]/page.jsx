@@ -1,3 +1,4 @@
+"use server"
 import axios from "axios";
 import MyModal from "./modal";
 import dotenv from "dotenv";
@@ -109,9 +110,9 @@ async function Compañia({ params }) {
                     </tr>
                   </thead>
                   {/* Cuerpo de la tabla */}
-                  <tbody>
+                  <tbody key={parts.id_part}>
                     {hombres.map((part, index) => (
-                      <tr key={part.id}>
+                      <tr key={part.id_part}>
                         <td
                           className={`px-4 py-3 text-sm ${
                             index === 0
@@ -227,9 +228,9 @@ async function Compañia({ params }) {
                     </tr>
                   </thead>
                   {/* Cuerpo de la tabla */}
-                  <tbody>
+                  <tbody key={parts.id_part}>
                     {mujeres.map((part, index) => (
-                      <tr key={part.id}>
+                      <tr key={part.id_part}>
                         <td
                           className={`px-4 py-3 text-sm ${
                             index === 0 ? "" : "border-t-2 border-gray-200"
